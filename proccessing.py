@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-
+import pyexcel
 
 def get_filenames():
     current_directory = os.getcwd()
@@ -18,7 +18,8 @@ def concat_files_and_add_muszakcolumn():
         data = pd.read_csv(file, sep=';', encoding='utf-8')
         concatenated_data = pd.concat([concatenated_data, data], ignore_index=True)
 
-    concatenated_data = concatenated_data.iloc[:, :-1]
+    if len(concatenated_data) > 6:
+        concatenated_data = concatenated_data.iloc[:, :-1]
     concatenated_data['Műszak'] = 'teljes'
     return concatenated_data
 
@@ -31,6 +32,8 @@ def format_intervall(concatenated_data):
 
 def save_file(concatenated_data):
     concatenated_data.to_csv('output.csv', encoding='utf-8-sig', index=False, sep = ';')
+    sheet = pyexcel.get_sheet(file_name="output.csv", delimiter=";")
+    sheet.save_as("output.xlsx")
 
 def start():
     concatenated_data = concat_files_and_add_muszakcolumn()
