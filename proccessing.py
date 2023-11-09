@@ -18,16 +18,27 @@ def concat_files_and_add_muszakcolumn():
         data = pd.read_csv(file, sep=';', encoding='utf-8')
         concatenated_data = pd.concat([concatenated_data, data], ignore_index=True)
 
-    if len(concatenated_data) > 6:
-        concatenated_data = concatenated_data.iloc[:, :-1]
+    #* HA BELEKERÜL EGY UNNAMED OSZLOP A EXCELBE AKKOR EZT A SORT KOMMENTELD VISSZA
+    # concatenated_data = concatenated_data.iloc[:, :-1]
     concatenated_data['Műszak'] = 'teljes'
     return concatenated_data
 
 def format_date(date_range):
     return date_range.split(' - ')[0]
 
+def convert_to_hours_minutes(time_str):
+    components = list(map(int, time_str.split(':')))
+    hours, minutes = components[:2]
+    seconds = components[2] if len(components) == 3 else 0
+    result = hours + (minutes + seconds/60) / 60
+    return round(result, 2)
+
 def format_intervall(concatenated_data):
     concatenated_data['Időtartományok'] = concatenated_data['Időtartományok'].apply(format_date)
+    return concatenated_data
+
+def format_teljesmunkaidocolunm(concatenated_data):
+    concatenated_data['Teljes munkaidő'] = concatenated_data['Teljes munkaidő'].apply(convert_to_hours_minutes)
     return concatenated_data
 
 def save_file(concatenated_data):
@@ -38,6 +49,7 @@ def save_file(concatenated_data):
 def start():
     concatenated_data = concat_files_and_add_muszakcolumn()
     concatenated_data = format_intervall(concatenated_data)
+    concatenated_data = format_teljesmunkaidocolunm(concatenated_data)
     save_file(concatenated_data)
 
 if  __name__ == "__main__":
