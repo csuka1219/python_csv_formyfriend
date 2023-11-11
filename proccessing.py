@@ -26,7 +26,7 @@ def concat_files_and_add_muszakcolumn():
 def format_date(date_range):
     return date_range.split(' - ')[0]
 
-def convert_to_hours_minutes(time_str):
+def convert_time_to_fraction(time_str):
     components = list(map(int, time_str.split(':')))
     hours, minutes = components[:2]
     seconds = components[2] if len(components) == 3 else 0
@@ -38,7 +38,7 @@ def format_intervall(concatenated_data):
     return concatenated_data
 
 def format_teljesmunkaidocolunm(concatenated_data):
-    concatenated_data['Teljes munkaidő'] = concatenated_data['Teljes munkaidő'].apply(convert_to_hours_minutes)
+    concatenated_data['Teljes munkaidő'] = concatenated_data['Teljes munkaidő'].apply(convert_time_to_fraction)
     return concatenated_data
 
 def save_file(concatenated_data):
