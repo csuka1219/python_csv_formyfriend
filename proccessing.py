@@ -4,6 +4,8 @@ import pyexcel
 
 csvPath = 'c:\\Users\\Peti\\Desktop\\Report\\csv\\'
 output = 'C:\\Users\\Peti\\Desktop\\Report\\output\\'
+# csvPath = 'D:\\Work\\szkriptek\\'
+# output = 'D:\\Work\\szkriptek\\'
 
 def get_filenames():
     current_directory = os.chdir(csvPath)
@@ -16,12 +18,11 @@ def get_filenames():
 def concat_files_and_add_muszakcolumn():
     files = get_filenames()
     concatenated_data = pd.DataFrame()
-
     for file in files:
         data = pd.read_csv(file, sep=';', encoding='utf-8')
         concatenated_data = pd.concat([concatenated_data, data], ignore_index=True)
 
-    #* HA BELEKERÜL EGY UNNAMED OSZLOP A EXCELBE AKKOR EZT A SORT KOMMENTELD VISSZA
+    concatenated_data = concatenated_data.loc[:, ~concatenated_data.columns.str.contains('^Unnamed')]
     # concatenated_data = concatenated_data.iloc[:, :-1]
     concatenated_data['Műszak'] = ''
     return concatenated_data
@@ -53,7 +54,7 @@ def format_teljesmunkaidocolumn(concatenated_data):
 
 def format_muszakcolumn(concatenated_data):
     concatenated_data['Műszak'] = concatenated_data['Munka kezdés'].apply(update_shift_status)
-    concatenated_data['Műszak'] = concatenated_data['Munka vége'].apply(update_shift_status)
+    concatenated_data['Műszak'] = concatenated_data['Regisztrált kilépési idő'].apply(update_shift_status)
     return concatenated_data
 
 def save_file(concatenated_data):
